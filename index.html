@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Birthday Card</title>
+
+  <!-- Tailwind CSS (CDN) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Custom stylesheet -->
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- Tailwind config extension -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            display : ['Dancing Script', 'cursive'],
+            serif   : ['Cormorant Garamond', 'serif'],
+            playfair: ['Playfair Display', 'serif'],
+          },
+        },
+      },
+    };
+  </script>
+
+  <!-- Preconnect for Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- Google Fonts imports -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+  <!-- ░░ Animated Background ░░ -->
+  <canvas id="starfield" aria-hidden="true"></canvas>
+  <canvas id="confetti-canvas" aria-hidden="true"></canvas>
+
+
+  <!-- ░░ Main Scene ░░ -->
+  <main id="scene" role="main">
+
+    <!-- Hint label -->
+    <p id="hint" aria-live="polite">Open on Chrome or browser for full experience </p>
+
+    <!-- Card Stage (3-D perspective host) -->
+    <div id="card-stage"
+         role="button"
+         tabindex="0"
+         aria-label="Birthday gift card — press Enter to open"
+         aria-expanded="false">
+
+      <div id="card">
+
+        <!-- ══════════════════════════════
+             FRONT COVER
+        ══════════════════════════════ -->
+        <div id="card-front" aria-hidden="true">
+
+          <!-- Ribbon cross -->
+          <div class="ribbon-v"></div>
+          <div class="ribbon-h"></div>
+
+          <!-- Bow (SVG-drawn loops) -->
+          <div class="bow" aria-hidden="true">
+            <div class="bow-loop bow-loop-l"></div>
+            <div class="bow-loop bow-loop-r"></div>
+            <div class="bow-knot"></div>
+            <div class="bow-tail bow-tail-l"></div>
+            <div class="bow-tail bow-tail-r"></div>
+          </div>
+
+          <!-- Title text on cover -->
+          <div class="front-title">Happy Birthday!</div>
+          <div class="front-sub">click or touch to open</div>
+
+
+          <!-- Subtle bottom pattern dots -->
+          <div class="absolute inset-0 pointer-events-none" aria-hidden="true"
+               style="background-image:radial-gradient(circle, rgba(255,255,255,.04) 1px, transparent 1px);
+                      background-size:22px 22px;">
+          </div>
+
+        </div><!-- /card-front -->
+
+        <!-- ══════════════════════════════
+             INSIDE CONTENT
+        ══════════════════════════════ -->
+        <div id="card-inside" aria-label="Birthday message" role="region">
+
+          <!-- Decorative watermark -->
+          <div class="absolute inset-0 pointer-events-none flex items-center justify-center opacity-5"
+               aria-hidden="true">
+            <span style="font-size:10rem;line-height:1;">🎂</span>
+          </div>
+
+          <!-- Cake icon with candle -->
+          <div class="inside-icon">
+            <svg class="cake-svg" viewBox="0 0 120 100" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="cake-base" x1="0" x2="0" y1="0" y2="1">
+                  <stop offset="0%" stop-color="#e6a36a"/>
+                  <stop offset="100%" stop-color="#c97a4a"/>
+                </linearGradient>
+                <linearGradient id="cake-mid" x1="0" x2="0" y1="0" y2="1">
+                  <stop offset="0%" stop-color="#e0a072"/>
+                  <stop offset="100%" stop-color="#b86b3f"/>
+                </linearGradient>
+                <linearGradient id="cake-top" x1="0" x2="0" y1="0" y2="1">
+                  <stop offset="0%" stop-color="#f1b786"/>
+                  <stop offset="100%" stop-color="#d88a55"/>
+                </linearGradient>
+                <linearGradient id="frosting" x1="0" x2="0" y1="0" y2="1">
+                  <stop offset="0%" stop-color="#fff1f0"/>
+                  <stop offset="100%" stop-color="#f5c9b8"/>
+                </linearGradient>
+              </defs>
+
+              <!-- Plate/Base -->
+              <ellipse cx="60" cy="86" rx="56" ry="12" fill="#e7c2a1" opacity="0.7"/>
+              <ellipse cx="60" cy="86" rx="38" ry="6" fill="#d4a986" opacity="0.7"/>
+
+              <!-- Bottom layer -->
+              <rect x="16" y="58" width="88" height="26" rx="4" fill="url(#cake-base)"/>
+              <ellipse cx="60" cy="58" rx="45" ry="8" fill="#ebb07b"/>
+
+              <!-- Middle layer -->
+              <rect x="22" y="34" width="76" height="24" rx="4" fill="url(#cake-mid)"/>
+              <ellipse cx="60" cy="34" rx="40" ry="8" fill="#e7a46b"/>
+
+              <!-- Top layer -->
+              <rect x="28" y="12" width="64" height="22" rx="4" fill="url(#cake-top)"/>
+              <ellipse cx="60" cy="12" rx="34" ry="7" fill="#f2bf8d"/>
+
+              <!-- Frosting drips -->
+              <path d="M20 58 C26 62, 32 62, 38 58 C44 54, 50 54, 56 58 C62 62, 68 62, 74 58 C80 54, 86 54, 92 58 L92 62 L20 62 Z" fill="url(#frosting)"/>
+              <path d="M27 34 C33 38, 39 38, 45 34 C51 30, 57 30, 63 34 C69 38, 75 38, 81 34 L81 38 L27 38 Z" fill="url(#frosting)" opacity="0.9"/>
+              <path d="M34 12 C39 16, 44 16, 49 12 C54 8, 59 8, 64 12 C69 16, 74 16, 79 12 L79 16 L34 16 Z" fill="url(#frosting)"/>
+
+              <!-- Sprinkles -->
+              <circle cx="40" cy="28" r="2" fill="#ff6b6b"/>
+              <circle cx="52" cy="26" r="1.8" fill="#60a5fa"/>
+              <circle cx="68" cy="27" r="2" fill="#facc15"/>
+              <circle cx="82" cy="29" r="1.6" fill="#4ade80"/>
+              <circle cx="46" cy="51" r="1.6" fill="#fb923c"/>
+              <circle cx="74" cy="50" r="1.6" fill="#c084fc"/>
+
+              <!-- Cherries -->
+              <circle cx="48" cy="16" r="3.2" fill="#e11d48"/>
+              <circle cx="72" cy="16" r="3.2" fill="#e11d48"/>
+              <path d="M48 13 C50 10, 54 9, 56 10" stroke="#6b3f2a" stroke-width="1.2" fill="none"/>
+              <path d="M72 13 C70 10, 66 9, 64 10" stroke="#6b3f2a" stroke-width="1.2" fill="none"/>
+            </svg>
+
+            <!-- Candle with fire -->
+            <div class="candle-container">
+              <div class="candle"></div>
+              <div class="candle-fire" id="candle-fire">
+                <div class="flame-glow"></div>
+                <div class="flame-outer">
+                  <div class="flame-layer flame-layer-1"></div>
+                  <div class="flame-layer flame-layer-2"></div>
+                  <div class="flame-layer flame-layer-3"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Heading -->
+          <h1 class="inside-header">
+            Happy Birthday,<br/>
+            <em style="font-size:1.1em;">Nurse</em>
+          </h1>
+
+          <!-- Gold divider -->
+          <div class="inside-divider"></div>
+
+          <!-- Message with typewriter -->
+          <p class="inside-msg" id="msg-text" aria-live="polite"></p>
+
+          <!-- Close / fold-back button -->
+          <button id="close-btn"
+                  class="inside-close-btn"
+                  aria-label="Close birthday card">
+            ✕ close
+          </button>
+
+        </div><!-- /card-inside -->
+
+      </div><!-- /card -->
+
+    </div><!-- /card-stage -->
+
+  </main><!-- /scene -->
+
+  <!-- ░░ Mute Button ░░ -->
+  <button id="mute-btn"
+          aria-label="Toggle music mute"
+          title="Mute / Unmute (M)">
+    🔊
+  </button>
+
+  <!-- ░░ Blow Candle Prompt ░░ -->
+  <div id="blow-prompt">
+    <div style="background: #E8F5BD; padding: 40px; border-radius: 16px; text-align: center; max-width: 400px; box-shadow: 0 10px 40px rgba(0,0,0,0.3);">
+      <h2 style="font-size: 1.5rem; color: #5a4a2a; margin-bottom: 15px; font-family: 'Dancing Script', cursive;">Blow Out the Candle!</h2>
+      <p style="font-size: 1rem; color: #3d4a1a; margin-bottom: 20px; font-family: 'Cormorant Garamond', serif;">You can blow into your microphone or press <strong>SPACEBAR</strong> to extinguish the candle.</p>
+      <button id="blow-prompt-ok" style="background: #A2CB8B; color: #fff; border: none; padding: 12px 30px; border-radius: 8px; font-size: 1rem; cursor: pointer; font-family: 'Cormorant Garamond', serif; letter-spacing: 0.1em; text-transform: uppercase; transition: background 0.2s;">
+        Ready!
+      </button>
+    </div>
+  </div>
+
+  <!-- ░░ Scripts ░░ -->
+  <script src="script.js"></script>
+
+  <!-- Patch: animate the emoji row as part of card-opened class -->
+  <script>
+    // Observe class changes on card-inside to also trigger emoji-row
+    const emojiRow = document.getElementById('emoji-row');
+    const observer = new MutationObserver(() => {
+      if (document.getElementById('card-inside').classList.contains('card-opened')) {
+        emojiRow.style.opacity = '.8';
+        emojiRow.style.transform = 'translateY(0)';
+      } else {
+        emojiRow.style.opacity = '0';
+        emojiRow.style.transform = 'translateY(14px)';
+      }
+    });
+    observer.observe(document.getElementById('card-inside'), { attributes: true, attributeFilter: ['class'] });
+  </script>
+
+</body>
+</html>

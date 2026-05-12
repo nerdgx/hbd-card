@@ -1,0 +1,623 @@
+/* ============================================================
+   Birthday Gift Card — style.css
+   Custom animations, 3D transforms, keyframes & theming
+   ============================================================ */
+
+/* ── Google Fonts ── */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+/* ── CSS Custom Properties ── */
+:root {
+  --gold:        #f5c842;
+  --gold-light:  #ffe680;
+  --gold-dark:   #c49a10;
+  --rose:        #f87171;
+  --rose-light:  #fecaca;
+  --rose-dark:   #dc2626;
+  --cream:       #fdf6ec;
+  --midnight:    #0d0620;
+  --purple-deep: #1a0a3d;
+  --purple-mid:  #2d1060;
+  --card-front:  #2a0a50;
+  --card-inside: #fdf6ec;
+  --ribbon:      #e63950;
+  --ribbon-dark: #b8192e;
+
+  --shadow-glow: 0 0 40px rgba(245,200,66,.45), 0 0 80px rgba(245,200,66,.2);
+  --card-w: min(420px, 90vw);
+  --card-h: calc(var(--card-w) * 1.35);
+}
+
+/* ── Reset / Base ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background: #ffffff;
+  color: var(--cream);
+  overflow: hidden;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ── Starfield Background ── */
+#starfield {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── Floating Orbs ── */
+.orb {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: .35;
+  pointer-events: none;
+  z-index: 0;
+  animation: drift 12s ease-in-out infinite alternate;
+}
+.orb-1 { width: 400px; height: 400px; background: #5b21b6; top: -100px; left: -100px; animation-duration: 14s; }
+.orb-2 { width: 300px; height: 300px; background: #be185d; bottom: -80px; right: -80px; animation-duration: 11s; animation-delay: -3s; }
+.orb-3 { width: 250px; height: 250px; background: #1e40af; top: 40%; left: 60%; animation-duration: 16s; animation-delay: -6s; }
+
+@keyframes drift {
+  from { transform: translate(0,0) scale(1); }
+  to   { transform: translate(40px, 30px) scale(1.1); }
+}
+
+/* ── Scene Wrapper ── */
+#scene {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+/* ── Hint Label ── */
+#hint {
+  font-family: 'Poppins', sans-serif;
+  font-size: clamp(.85rem, 2.2vw, 1rem);
+
+  color: rgba(0, 0, 0, 0.55);
+  transition: opacity .5s;
+}
+#hint.hidden { opacity: 0; pointer-events: none; }
+
+/* ── Card Stage (3-D perspective container) ── */
+#card-stage {
+  width: var(--card-w);
+  height: var(--card-h);
+  perspective: 1400px;
+  cursor: pointer;
+  position: relative;
+}
+
+/* ── Card Base ── */
+#card {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform .15s ease;
+}
+
+/* idle hover bounce */
+#card-stage:hover #card { transform: translateY(-8px) scale(1.015); }
+#card-stage:hover #card-front { box-shadow: var(--shadow-glow), 0 30px 60px rgba(0,0,0,.6); }
+
+/* ── Card Front (cover) ── */
+#card-front {
+  position: absolute;
+  inset: 0;
+  border-radius: 20px;
+  background: linear-gradient(145deg, #8aba6f 0%, #A2CB8B 50%, #7da366 100%);
+  box-shadow: 0 20px 50px rgba(0,0,0,.55), 0 0 30px rgba(245,200,66,.15);
+  transform-origin: left center;
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+  overflow: hidden;
+  transition: box-shadow .4s;
+  z-index: 3;
+}
+
+/* Holographic sheen on front */
+#card-front::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(125deg,
+    transparent 40%,
+    rgba(255,255,255,.04) 50%,
+    transparent 60%);
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+/* ── Ribbon ── */
+.ribbon-v {
+  position: absolute;
+  top: 0; bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 500px;
+  height: 100%;
+  background-image: url('ribbon.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  z-index: 2;
+  pointer-events: none;
+}
+.ribbon-h {
+  position: absolute;
+  left: 0; right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 100%;
+  height: 300px;
+  background-image: url('ribbon.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  z-index: 2;
+  pointer-events: none;
+}
+/* Ribbon shine */
+.ribbon-v::after, .ribbon-h::after {
+  display: none;
+}
+
+/* ── Bow ── */
+.bow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 4;
+  width: 80px;
+  height: 60px;
+  display: none;
+}
+.bow-loop {
+  display: none;
+}
+.bow-loop-l { display: none; }
+.bow-loop-r { display: none; }
+.bow-knot {
+  display: none;
+}
+.bow-tail {
+  display: none;
+}
+.bow-tail-l { display: none; }
+.bow-tail-r { display: none; }
+
+/* ── Front Stars / Sparkles ── */
+.front-sparkle {
+  position: absolute;
+  pointer-events: none;
+  animation: sparkle-idle 2.5s ease-in-out infinite;
+}
+@keyframes sparkle-idle {
+  0%,100% { opacity:.6; transform: scale(1) rotate(0deg); }
+  50%      { opacity: 1; transform: scale(1.4) rotate(20deg); }
+}
+
+/* ── Front Title ── */
+.front-title {
+  position: absolute;
+  bottom: 28%;
+  width: 100%;
+  text-align: center;
+  font-family: 'Poppins', sans-serif;
+  font-size: clamp(2rem, 6vw, 2.6rem);
+  color: #fff;
+  text-shadow: 0 0 12px rgba(255,255,255,.5), 0 0 30px rgba(255,255,255,.3);
+  letter-spacing: .05em;
+  pointer-events: none;
+  padding: 0 20px;
+}
+.front-sub {
+  position: absolute;
+  bottom: 22%;
+  width: 100%;
+  text-align: center;
+  font-family: 'Poppins', sans-serif;
+  font-size: clamp(.85rem, 2.2vw, .85rem);
+  letter-spacing: .3em;
+ 
+  color: rgba(255,255,255,.85);
+  pointer-events: none;
+}
+
+/* ── Card Inside (back face / inner) ── */
+#card-inside {
+  position: absolute;
+  inset: 0;
+  border-radius: 20px;
+  background: linear-gradient(160deg, #f0ffdc 0%, #E8F5BD 60%, #e5f0a8 100%);
+  padding: clamp(22px, 5vw, 38px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Decorative corner flourishes */
+#card-inside::before, #card-inside::after {
+  display: none;
+}
+
+/* ── Inside Content ── */
+.inside-icon {
+  font-size: clamp(2.5rem, 7vw, 3.5rem);
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity .5s, transform .5s;
+  position: relative;
+  height: clamp(120px, 22vw, 150px);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+/* Cake container */
+.cake-svg {
+  width: clamp(90px, 20vw, 110px);
+  height: clamp(90px, 20vw, 110px);
+}
+
+/* Candle container */
+.candle-container {
+  position: absolute;
+  bottom: clamp(80px, 16vw, 95px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 20px;
+  height: 50px;
+  z-index: 10;
+}
+
+/* Candle */
+.candle {
+  width: 8px;
+  height: 35px;
+  background: linear-gradient(90deg, #fff8dc, #fffacd, #fff8dc);
+  border-radius: 2px;
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  box-shadow: inset -1px 0 2px rgba(0,0,0,.15);
+  z-index: 11;
+}
+
+/* Fire */
+.candle-fire {
+  position: absolute;
+  width: 24px;
+  height: 32px;
+  bottom: 35px;
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 1;
+  transition: opacity 0.3s;
+  z-index: 12;
+}
+
+.candle-fire.blown {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Fire flame layers */
+.flame-outer {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  bottom: 0;
+  left: 0;
+}
+
+.flame-layer {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  bottom: 0;
+  left: 0;
+}
+
+/* Outer flame - orange/red */
+.flame-layer-1 {
+  background: radial-gradient(ellipse at center bottom, #ff4500 0%, #ff6347 40%, transparent 70%);
+  animation: flicker-outer 0.5s ease-in-out infinite;
+}
+
+/* Middle flame - yellow/orange */
+.flame-layer-2 {
+  background: radial-gradient(ellipse at center bottom, #ffaa00 0%, #ff8800 30%, transparent 60%);
+  animation: flicker-middle 0.4s ease-in-out infinite 0.1s;
+  clip-path: polygon(30% 100%, 0% 40%, 20% 0%, 80% 0%, 100% 40%, 70% 100%);
+}
+
+/* Inner flame - yellow */
+.flame-layer-3 {
+  background: radial-gradient(ellipse at center bottom, #ffff00 0%, #ffdd00 20%, transparent 50%);
+  animation: flicker-inner 0.45s ease-in-out infinite 0.05s;
+  clip-path: polygon(40% 100%, 20% 50%, 35% 0%, 65% 0%, 80% 50%, 60% 100%);
+}
+
+/* Glow effect */
+.flame-glow {
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: radial-gradient(circle, rgba(255, 150, 0, 0.4) 0%, transparent 70%);
+  animation: glow-pulse 0.6s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes flicker-outer {
+  0%, 100% {
+    transform: translateY(0) scaleX(0.95);
+    opacity: 0.9;
+  }
+  25% {
+    transform: translateY(-8px) scaleX(1.1);
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(-12px) scaleX(1);
+    opacity: 0.95;
+  }
+  75% {
+    transform: translateY(-6px) scaleX(1.05);
+    opacity: 0.9;
+  }
+}
+
+@keyframes flicker-middle {
+  0%, 100% {
+    transform: translateY(0) scaleX(0.9) scaleY(1);
+    opacity: 1;
+  }
+  25% {
+    transform: translateY(-10px) scaleX(1.05) scaleY(1.1);
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(-14px) scaleX(0.95) scaleY(1);
+    opacity: 0.98;
+  }
+  75% {
+    transform: translateY(-8px) scaleX(1) scaleY(1.05);
+    opacity: 1;
+  }
+}
+
+@keyframes flicker-inner {
+  0%, 100% {
+    transform: translateY(2px) scaleX(0.85);
+    opacity: 1;
+  }
+  25% {
+    transform: translateY(-8px) scaleX(1);
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(-12px) scaleX(0.9) scaleY(1.1);
+    opacity: 0.95;
+  }
+  75% {
+    transform: translateY(-6px) scaleX(0.95) scaleY(1);
+    opacity: 1;
+  }
+}
+
+@keyframes glow-pulse {
+  0%, 100% {
+    opacity: 0.3;
+    transform: translateX(-50%) scale(0.9);
+  }
+  50% {
+    opacity: 0.6;
+    transform: translateX(-50%) scale(1.1);
+  }
+}
+
+.inside-header {
+  font-family: 'Poppins', sans-serif;
+  font-size: clamp(1.6rem, 5.5vw, 2.2rem);
+  color: #5a4a2a;
+  text-align: center;
+  line-height: 1.15;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity .6s .1s, transform .6s .1s;
+}
+
+.inside-divider {
+  width: 60px; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  opacity: 0;
+  transition: opacity .5s .2s;
+}
+
+.inside-msg {
+  font-family: 'Poppins', sans-serif;
+  font-size: clamp(.6rem, 1.3vw, .95rem);
+  font-style: italic;
+  color: #3d4a1a;
+  text-align: center;
+  line-height: 1.75;
+  max-width: 320px;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity .7s .3s, transform .7s .3s;
+}
+
+/* Typewriter cursor */
+.cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1.1em;
+  background: #5a4a2a;
+  vertical-align: middle;
+  margin-left: 2px;
+  animation: blink .7s step-end infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+.inside-from {
+  font-family: 'Poppins', sans-serif;
+  font-size: clamp(0.5rem, 1vw, 1.3rem);
+  color: #5a6a2a;
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity .6s .5s, transform .6s .5s;
+}
+
+.inside-close-btn {
+  position: absolute;
+  top: 16px; right: 18px;
+  background: none;
+  border: 1.5px solid rgba(90,74,42,.3);
+  border-radius: 6px;
+  padding: 4px 12px;
+  font-family: 'Poppins', sans-serif;
+  font-size: .8rem;
+  letter-spacing: .12em;
+  color: #5a4a2a;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity .5s .7s, background .2s;
+}
+.inside-close-btn:hover { background: rgba(90,74,42,.08); }
+
+/* ── Opened state: reveal inside content ── */
+.card-opened .inside-icon,
+.card-opened .inside-header,
+.card-opened .inside-msg,
+.card-opened .inside-from,
+.card-opened .inside-close-btn { opacity: 1; transform: translateY(0); }
+.card-opened .inside-divider { opacity: 1; }
+
+/* ── 3D Open animation ── */
+/* State classes driven by JS:  .opening  .opened  .closing */
+#card-front {
+  transition: transform .9s cubic-bezier(.4,0,.2,1), box-shadow .4s;
+}
+
+.card-stage-opening #card-front,
+.card-stage-opened  #card-front {
+  transform: rotateY(-170deg);
+}
+
+.card-stage-opened  #card-inside { opacity: 1; pointer-events: auto; }
+.card-stage-opening #card-inside { opacity: 1; }
+
+/* ── Mute Button ── */
+#mute-btn {
+  position: fixed;
+  bottom: 22px; right: 22px;
+  z-index: 100;
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,.2);
+  background: rgba(255,255,255,.08);
+  backdrop-filter: blur(10px);
+  color: #fff;
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .4s, background .2s, transform .15s;
+}
+#mute-btn.visible { opacity: 1; pointer-events: auto; }
+#mute-btn:hover { background: rgba(255,255,255,.18); transform: scale(1.1); }
+#mute-btn:active { transform: scale(.95); }
+
+/* ── Confetti canvas ── */
+#confetti-canvas {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 50;
+}
+
+/* ── Floating balloons ── */
+.balloon {
+  position: fixed;
+  bottom: -120px;
+  pointer-events: none;
+  z-index: 20;
+  animation: rise linear forwards;
+  opacity: 0;
+}
+.balloon svg { display: block; }
+@keyframes rise {
+  0%   { transform: translateX(0) rotate(-3deg); opacity: .9; bottom: -120px; }
+  25%  { transform: translateX(18px) rotate(3deg); }
+  50%  { transform: translateX(-14px) rotate(-2deg); }
+  75%  { transform: translateX(10px) rotate(2deg); }
+  100% { transform: translateX(-6px) rotate(-1deg); opacity: 0; bottom: 110vh; }
+}
+
+/* ── Heart particles ── */
+.heart-particle {
+  position: fixed;
+  pointer-events: none;
+  z-index: 40;
+  font-size: 1.2rem;
+  animation: heart-float 2.5s ease-out forwards;
+}
+@keyframes heart-float {
+  0%   { opacity: 1; transform: translateY(0) scale(1); }
+  100% { opacity: 0; transform: translateY(-120px) scale(.5); }
+}
+
+/* ── Reduced motion ── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
+
+/* ── Blow Prompt Modal ── */
+#blow-prompt {
+  position: fixed !important;
+  inset: 0 !important;
+  background: rgba(0,0,0,0.6) !important;
+  z-index: 1000 !important;
+  display: none !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+#blow-prompt.show {
+  display: flex !important;
+}
+
+/* ── Responsive tweaks ── */
+@media (max-width: 480px) {
+  :root { --card-w: 88vw; }
+  .front-title { font-size: 1.75rem; }
+  .inside-msg  { font-size: .9rem; }
+}
